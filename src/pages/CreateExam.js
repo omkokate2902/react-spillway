@@ -5,6 +5,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';  // For generating random ID
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+
 
 const CreateExam = () => {
   const [title, setTitle] = useState('');
@@ -37,10 +39,10 @@ const CreateExam = () => {
       // Upload PDFs to Firebase Storage
       const questionPaperRef = ref(storage, `exams/${uuidv4()}/${questionPaper.name}`);
       const modelAnswerPaperRef = ref(storage, `exams/${uuidv4()}/${modelAnswerPaper.name}`);
-      
+
       const questionPaperSnap = await uploadBytesResumable(questionPaperRef, questionPaper);
       const modelAnswerPaperSnap = await uploadBytesResumable(modelAnswerPaperRef, modelAnswerPaper);
-      
+
       const questionPaperUrl = await getDownloadURL(questionPaperSnap.ref);
       const modelAnswerPaperUrl = await getDownloadURL(modelAnswerPaperSnap.ref);
 
@@ -63,45 +65,71 @@ const CreateExam = () => {
       console.error("Error uploading files or saving data: ", error);
       setError("Failed to create exam.");
     }
-    
+
     setUploading(false);
   };
 
   return (
-    <div>
-      <h2>Create Exam</h2>
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      <input
-        type="text"
-        placeholder="Exam Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
-        placeholder="Exam Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <div>
-        <h3>Upload Question Paper (PDF)</h3>
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={(e) => handleFileChange(e, setQuestionPaper)}
-        />
+    <>
+      <div className='app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header closed-sidebar'>
+        <Header />
+        <div className="app-main">
+          <div className="app- container">
+            <div className="app- container">
+              <div className="app-page-title">
+
+                <br /><br />
+                <center><h1>CREATE TEST</h1></center>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <form className='form-group'>
+                  <h6> Exam Title</h6>
+                  <input
+                    type="text"
+                    placeholder="Exam Title"
+                    className='form-control'
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <br />
+                  <h6> Exam Description</h6>
+                  <textarea
+                    placeholder="Exam Description"
+                    className='form-control'
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                  <br />
+                  <div>
+                    <h6>Upload Question Paper (PDF)</h6>
+                    <input
+                      type="file"
+                      className='form-control'
+                      accept="application/pdf"
+                      onChange={(e) => handleFileChange(e, setQuestionPaper)}
+                    />
+                  </div>
+                  <br />
+                  <div>
+                    <h6>Upload Model Answer Paper (PDF)</h6>
+                    <input
+                      type="file"
+                      className='form-control'
+                      accept="application/pdf"
+                      onChange={(e) => handleFileChange(e, setModelAnswerPaper)}
+                    />
+                  </div>
+                </form>
+                <button className='w-100 p-2 btn btn-primary' onClick={handleUpload} disabled={uploading}>
+                  {uploading ? 'Uploading...' : 'Create Exam'}
+                </button>
+
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div>
-        <h3>Upload Model Answer Paper (PDF)</h3>
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={(e) => handleFileChange(e, setModelAnswerPaper)}
-        />
-      </div>
-      <button onClick={handleUpload} disabled={uploading}>
-        {uploading ? 'Uploading...' : 'Create Exam'}
-      </button>
-    </div>
+
+    </>
   );
 };
 

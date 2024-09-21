@@ -10,10 +10,33 @@ const TestCard = ({ id, title, description }) => {
   };
 
   return (
-    <div style={styles.card} onClick={handleClick}>
-      <h3>{title}</h3>
-      <p>{description}</p>
-    </div>
+
+    <>
+
+      <div className="col-md-3 mb-4" >
+        <div class="card" style={{ overflow: 'hidden' }} onClick={handleClick}>
+          <div class="card-body">
+            <h5 class="card-title">{title}</h5>
+
+            <p class="card-text" style={{
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              padding: '10px'
+            }}>{description}</p>
+            <a href="#" class="btn btn-outline-primary card-link" onClick={handleClick}>View</a>
+            {/* <a href="#" class="card-link">Another link</a> */}
+          </div>
+        </div>
+      </div >
+      {/* <div style={styles.card} onClick={handleClick}>
+
+
+        <h3>{title}</h3>
+        <p>{description}</p>
+      </div> */}
+    </>
+
   );
 };
 

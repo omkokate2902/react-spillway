@@ -1,7 +1,9 @@
 // src/pages/VerifyCandidate.js
 import React, { useEffect, useRef, useState } from 'react';
+import Header from '../components/Header';
 
-const VerifyCandidate = ({ userId, imageUrl }) => {
+
+const VerifyCandidate = ({ userId, getImage }) => {
   const [loading, setLoading] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const videoRef = useRef(null);
@@ -50,8 +52,9 @@ const VerifyCandidate = ({ userId, imageUrl }) => {
     if (!capturedImage) return;
 
     setLoading(true);
-    
+
     try {
+      console.log("started...")
       const response = await fetch('http://192.168.84.218:8000/verify_face', {
         method: 'POST',
         headers: {
@@ -59,10 +62,12 @@ const VerifyCandidate = ({ userId, imageUrl }) => {
         },
         body: JSON.stringify({
           userId: userId, // User ID
-          imageUrl: imageUrl, // Image URL from Firestore
+          imageUrl: getImage, // Image URL from Firestore
           capturedImage: capturedImage, // Base64 encoded captured image
         }),
       });
+
+      console.log("resoponse", response)
 
       if (response.ok) {
         const data = await response.json();
@@ -78,21 +83,41 @@ const VerifyCandidate = ({ userId, imageUrl }) => {
   };
 
   return (
-    <div>
-      <h1>Verify Candidate</h1>
-      <video ref={videoRef} autoPlay style={{ width: '100%', height: 'auto' }} />
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
-      <button onClick={handleCapture}>Capture Image</button>
-      {capturedImage && (
-        <div>
-          <h2>Captured Image</h2>
-          <img src={capturedImage} alt="Captured" style={{ width: '200px', height: 'auto' }} />
+    <>
+      <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header closed-sidebar">
+        <Header />
+        <div className="app-main">
+          <div class="" style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+
+
+          }}>
+            <div class="a">
+              <center>
+                <h1>Verify Candidate</h1>
+              </center>
+              <video ref={videoRef} autoPlay style={{ width: '100%', height: '340px' }} />
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
+              <center>
+                <button onClick={handleCapture} className='px-5 btn btn-warning mx-4'>Capture Image</button>
+                {capturedImage && (
+                  <div>
+                    <h2>Captured Image</h2>
+                    <img src={capturedImage} alt="Captured" style={{ width: '200px', height: 'auto' }} />
+                  </div>
+                )}
+                <button onClick={handleVerify} className='px-5 btn btn-success' disabled={loading}>
+                  {loading ? 'Verifying...' : 'Verify'}
+                </button>
+              </center>
+            </div>
+          </div>
         </div>
-      )}
-      <button onClick={handleVerify} disabled={loading}>
-        {loading ? 'Verifying...' : 'Verify'}
-      </button>
-    </div>
+      </div>
+
+    </>
   );
 };
 
